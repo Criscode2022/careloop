@@ -1,0 +1,13 @@
+{
+  "name": "careloop",
+  "version": "1.0.0",
+  "private": true,
+  "description": "CareLoop — family caregiver coordination platform",
+  "workspaces": ["apps/api", "apps/web"],
+  "scripts": {
+    "dev:api": "npm run start:dev --workspace=@careloop/api",
+    "dev:web": "npm start --workspace=@careloop/web",
+    "test": "npm run test --workspace=@careloop/api"
+  },
+  "engines": { "node": ">=20" }
+}
