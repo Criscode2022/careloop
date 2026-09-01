@@ -1,0 +1,99 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String
+  passwordHash String
+  createdAt    DateTime @default(now())
+  memberships  Membership[]
+  authoredNotes JournalNote[]
+  assignedTasks Task[] @relation("TaskAssignee")
+}
+
+model Circle {
+  id           String   @id @default(cuid())
+  name         String
+  inviteCode   String   @unique
+  createdAt    DateTime @default(now())
+  memberships  Membership[]
+  careRecipients CareRecipient[]
+  tasks        Task[]
+  notes        JournalNote[]
+}
+
+model Membership {
+  id        String   @id @default(cuid())
+  role      String   @default("caregiver")
+  userId    String
+  circleId  String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  circle    Circle   @relation(fields: [circleId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  @@unique([userId, circleId])
+}
+
+model CareRecipient {
+  id           String        @id @default(cuid())
+  circleId     String
+  name         String
+  dateOfBirth  DateTime?
+  conditions   String        @default("")
+  notes        String        @default("")
+  circle       Circle        @relation(fields: [circleId], references: [id], onDelete: Cascade)
+  medications  Medication[]
+  createdAt    DateTime      @default(now())
+}
+
+model Medication {
+  id          String   @id @default(cuid())
+  recipientId String
+  name        String
+  dosage      String
+  schedule    String
+  nextDueAt   DateTime
+  active      Boolean  @default(true)
+  recipient   CareRecipient @relation(fields: [recipientId], references: [id], onDelete: Cascade)
+  logs        DoseLog[]
+}
+
+model DoseLog {
+  id            String     @id @default(cuid())
+  medicationId  String
+  takenAt       DateTime   @default(now())
+  status        String
+  note          String     @default("")
+  medication    Medication @relation(fields: [medicationId], references: [id], onDelete: Cascade)
+}
+
+model Task {
+  id          String   @id @default(cuid())
+  circleId    String
+  title       String
+  description String   @default("")
+  dueAt       DateTime?
+  status      String   @default("open")
+  priority    String   @default("medium")
+  assigneeId  String?
+  circle      Circle   @relation(fields: [circleId], references: [id], onDelete: Cascade)
+  assignee    User?    @relation("TaskAssignee", fields: [assigneeId], references: [id])
+  createdAt   DateTime @default(now())
+}
+
+model JournalNote {
+  id        String   @id @default(cuid())
+  circleId  String
+  authorId  String
+  body      String
+  mood      String   @default("steady")
+  createdAt DateTime @default(now())
+  circle    Circle   @relation(fields: [circleId], references: [id], onDelete: Cascade)
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+}
