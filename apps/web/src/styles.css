@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+body { margin: 0; min-height: 100vh; }
+.card { @apply rounded-2xl border border-emerald-900/10 bg-white/80 shadow-sm; }
+.btn { @apply inline-flex items-center justify-center rounded-xl px-4 py-2.5 text-sm font-medium transition; }
+.btn-primary { @apply btn bg-moss text-white hover:bg-emerald-800; }
+.btn-ghost { @apply btn bg-white text-ink border border-emerald-900/10 hover:bg-mist; }
+.input { @apply w-full rounded-xl border border-emerald-900/15 bg-white px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-moss/40; }
